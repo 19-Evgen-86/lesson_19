@@ -2,6 +2,9 @@ from dao.model.movies import Movie
 
 
 class MovieDao():
+    """
+     Класс для взаимодействия c таблицей фильмов в БД
+     """
     def __init__(self, session):
         self.session = session
 

@@ -2,6 +2,9 @@ from dao.model.genres import Genre
 
 
 class GenreDao():
+    """
+     Класс для взаимодействия c таблицей жанров в БД
+     """
     def __init__(self, session):
         self.session = session
 
