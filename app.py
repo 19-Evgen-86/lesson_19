@@ -8,7 +8,9 @@ from config import Config
 from dao.model.directors import Director
 from dao.model.genres import Genre
 from dao.model.movies import Movie
+from dao.model.user import User
 from setup_db import db
+from utils import get_hash
 from views.directors import director_ns
 from views.genres import genre_ns
 from views.movies import movie_ns
@@ -245,7 +247,12 @@ def create_data(app, db):
                 {"name": "Короткометражка", "pk": 10}, {"name": "Ужасы", "pk": 11}, {"name": "Боевик", "pk": 12},
                 {"name": "Мелодрама", "pk": 13}, {"name": "Детектив", "pk": 14}, {"name": "Авторское кино", "pk": 15},
                 {"name": "Мультфильм", "pk": 16}, {"name": "Вестерн", "pk": 17}, {"name": "Мюзикл", "pk": 18}],
+            "users": [
+                {"name": "vasya", "password": "my_little_pony", "role": "user"},
+                {"name": "oleg", "password": "qwerty", "role": "user"},
+                {"name": "oleg", "password": "ssw0rd", "role": "admin"}]
         }
+
         # -------------------------------------------------------
 
         for movie in data["movies"]:
@@ -280,9 +287,16 @@ def create_data(app, db):
             with db.session.begin():
                 if db.session.query(Genre).filter(Genre.id == genre["pk"]).first() is None:
                     db.session.add(d)
+        for user in data["user"]:
+            u = User(
+                name=user["name"],
+                password=get_hash(user["password"]),
+                role=user["role"]
+            )
+            with db.session.begin():
+                db.session.add(u)
 
+    app = create_app(Config())
 
-app = create_app(Config())
-
-if __name__ == '__main__':
-    app.run(host="localhost", port=10001)
+    if __name__ == '__main__':
+        app.run(host="localhost", port=10001)
