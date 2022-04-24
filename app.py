@@ -11,12 +11,16 @@ from dao.model.movies import Movie
 from dao.model.user import User
 from setup_db import db
 from utils import get_hash
+from views.auth import auth_ns
 from views.directors import director_ns
 from views.genres import genre_ns
 from views.movies import movie_ns
 
 
 # функция создания основного объекта app
+from views.users import user_ns
+
+
 def create_app(config_object):
     app = Flask(__name__)
     app.config.from_object(config_object)
@@ -31,6 +35,8 @@ def register_extensions(app):
     api.add_namespace(director_ns)
     api.add_namespace(movie_ns)
     api.add_namespace(genre_ns)
+    api.add_namespace(user_ns)
+    api.add_namespace(auth_ns)
 
     create_data(app, db)
 
@@ -287,16 +293,19 @@ def create_data(app, db):
             with db.session.begin():
                 if db.session.query(Genre).filter(Genre.id == genre["pk"]).first() is None:
                     db.session.add(d)
-        for user in data["user"]:
+        for user in data["users"]:
             u = User(
-                name=user["name"],
+                username=user["name"],
                 password=get_hash(user["password"]),
                 role=user["role"]
             )
             with db.session.begin():
-                db.session.add(u)
+                if db.session.query(User).filter(User.username == user["name"],
+                                                 User.password == get_hash(user["password"])).first() is None:
+                    db.session.add(u)
 
-    app = create_app(Config())
 
-    if __name__ == '__main__':
-        app.run(host="localhost", port=10001)
+app = create_app(Config())
+
+if __name__ == '__main__':
+    app.run(host="localhost", port=10001)

@@ -1,10 +1,10 @@
 # файл для создания DAO и сервисов чтобы импортировать их везде
-
-
+from dao.auth import AuthDao
 from dao.director import DirectorDao
 from dao.genre import GenreDao
 from dao.movie import MovieDao
 from dao.user import UserDao
+from service.auth import AuthService
 from service.director import DirectorService
 from service.genre import GenreService
 from service.movie import MovieService
@@ -22,4 +22,7 @@ genre_service = GenreService(genre_dao)
 
 user_dao = UserDao(db.session)
 user_service = UserService(user_dao)
+
+auth_dao = AuthDao(db.session)
+auth_service = AuthService(auth_dao)
 

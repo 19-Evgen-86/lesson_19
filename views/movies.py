@@ -2,6 +2,7 @@ from flask import request
 from flask_restx import Namespace, Resource
 
 from implemented import movie_service
+from utils import auth_required
 
 movie_ns = Namespace("movies")
 
@@ -10,8 +11,9 @@ movie_ns = Namespace("movies")
 class MoviesView(Resource):
     @movie_ns.doc(params={"director_id": "ID Режиссера", "genre_id": "ID :Жанра"})
     @movie_ns.response(200, description="Возвращает список фильмов")
+    @auth_required
     def get(self):
-        result = movie_service.get_one(request.args)
+        result = movie_service.get_movie_all(request.args)
         return result, 200
 
     @movie_ns.response(200, description="Фильм добавлен")
@@ -25,8 +27,9 @@ class MoviesView(Resource):
 class MovieView(Resource):
     @movie_ns.doc(params={"uid": "ID Фильма"})
     @movie_ns.response(200, description="Возвращает фильм по ID")
+    @auth_required
     def get(self, uid):
-        result = movie_service.get_movie_all(uid)
+        result = movie_service.get_movie_one(uid)
         return result, 200
 
     @movie_ns.doc(params={"uid": "ID Фильма", "data": "Данные для обновления"})

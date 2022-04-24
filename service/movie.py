@@ -1,6 +1,6 @@
 from dao.model.movies import Movie, MovieSchema
 from dao.movie import MovieDao
-from utils import handling_exceptions
+from except_decorator import handling_exceptions
 
 movie_schemas = MovieSchema(many=True)
 movie_schema = MovieSchema()
@@ -12,7 +12,7 @@ class MovieService:
         self.movie_dao = movie_dao
 
     @handling_exceptions
-    def get_movie_all(self, mid):
+    def get_movie_one(self, mid):
         result = self.movie_dao.get_one_movie(mid)
         if result is None:
             return {"message": f"Movie with ID: '{mid}' not found"}
@@ -20,7 +20,7 @@ class MovieService:
             return movie_schema.dump(result)
 
     @handling_exceptions
-    def get_one(self, params: dict):
+    def get_movie_all(self, params: dict):
         if params:
             filters = {}
             for arg in params:

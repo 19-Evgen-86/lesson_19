@@ -1,7 +1,7 @@
 from dao.model.movies import Movie
 
 
-class MovieDao():
+class MovieDao:
     """
      Класс для взаимодействия c таблицей фильмов в БД
      """

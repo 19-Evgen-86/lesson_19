@@ -14,3 +14,15 @@ class DirectorDao():
 
     def get_one(self, mid):
         return self.session.query(Director).get(mid)
+
+    def create(self, data):
+        with self.session.begin():
+            self.session.add(data)
+
+    def update(self, data, mid):
+        with self.session.begin():
+            self.session.query(Director).filter(Director.id == mid).update(data)
+
+    def delete(self, mid):
+        with self.session.begin():
+            self.session.query(Director).filter(Director.id == mid).delete()

@@ -1,10 +1,8 @@
-from flask_sqlalchemy import SQLAlchemy
-
 from dao.model.user import User
 
 
 class UserDao:
-    def __init__(self, session: SQLAlchemy):
+    def __init__(self, session):
         self.session = session
 
     def create(self, data: User):
