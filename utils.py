@@ -1,14 +1,12 @@
 import base64
 import hashlib
 from datetime import datetime, timedelta
-from functools import wraps
 
 import jwt
 from flask import request
 from flask_restx import abort
 
 from constants import PWD_HASH_SALT, PWD_HASH_ITERATIONS, PWD_HASH_NAME, SECRET_KEY, ALGO
-from implemented import auth_service
 
 
 def get_hash(password):
@@ -54,7 +52,7 @@ def get_token_from_headers(headers: dict):
     :return:
     """
     if "Authorization" not in headers:
-        abort(401, message="Неправильный заголовок")
+        abort(401, message="Необходима авторизация")
     return headers['Authorization'].split(' ')[-1]
 
 
@@ -69,7 +67,7 @@ def decode_token(token: str, refresh_token: bool = False):
     try:
         decoded_token = jwt.decode(token, SECRET_KEY, ALGO)
     except jwt.PyJWTError as exc:
-        abort(401)
+        abort(401, message=f"error {exc}")
     if decoded_token["refresh_token"] != refresh_token:
         abort(401)
 
@@ -85,26 +83,19 @@ def auth_required(func):
 
     def inner(*args, **kwargs):
         token = get_token_from_headers(request.headers)
-        decoded_token = decode_token(token)
-
-        if not auth_service.check_username(decoded_token["username"]):
-            abort(401, message="Необходима авторизация")
-
+        decode_token(token)
         return func(*args, **kwargs)
 
     return inner
 
 
-def auth_admin_required(func):
+def admin_required(func):
     def inner(*args, **kwargs):
         token = get_token_from_headers(request.headers)
         decoded_token = decode_token(token)
 
         if decoded_token['role'] != 'admin':
             abort(403, message="Только для аdmin`ов")
-
-        if not auth_service.check_username(decoded_token["username"]):
-            abort(401, message="Необходима авторизация")
 
         return func(*args, **kwargs)
 

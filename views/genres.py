@@ -2,7 +2,7 @@ from flask import request
 from flask_restx import Namespace, Resource
 
 from implemented import genre_service
-from utils import auth_required
+from utils import auth_required, admin_required
 
 genre_ns = Namespace("genres")
 
@@ -16,6 +16,7 @@ class GenresView(Resource):
         return result, 200
 
     @genre_ns.response(200, description="Фильм добавлен")
+    @admin_required
     def post(self):
         data = request.json
         result = genre_service.add_genre(data)
@@ -33,6 +34,7 @@ class GenresView(Resource):
 
     @genre_ns.doc(params={"uid": "ID Жанра", "data": "Данные для обновления"})
     @genre_ns.response(201, description="Жанр обновлен")
+    @admin_required
     def put(self, uid):
         data = request.json
         result = genre_service.update_genre(data, uid)
@@ -40,6 +42,7 @@ class GenresView(Resource):
 
     @genre_ns.param("gid", "ID Жанра")
     @genre_ns.response(204, description="Жанр удален")
+    @admin_required
     def delete(self, gid):
         result = genre_service.delete_genre(gid)
         return result, 204

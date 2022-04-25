@@ -2,7 +2,7 @@ from flask import request
 from flask_restx import Namespace, Resource
 
 from implemented import director_service
-from utils import auth_required
+from utils import auth_required, admin_required
 
 director_ns = Namespace("directors")
 
@@ -16,6 +16,7 @@ class DirectorsView(Resource):
         return result, 200
 
     @director_ns.response(200, description="Режиссер добавлен")
+    @admin_required
     def post(self):
         data = request.json
         result = director_service.add_director(data)
@@ -33,6 +34,7 @@ class DirectorView(Resource):
 
     @director_ns.doc(params={"did": "ID Режиссера", "data": "Данные для обновления"})
     @director_ns.response(201, description="Режиссер обновлен")
+    @admin_required
     def put(self, did):
         data = request.json
         result = director_service.update_movie(data, did)
@@ -40,6 +42,7 @@ class DirectorView(Resource):
 
     @director_ns.param("did", "ID Режиссер")
     @director_ns.response(204, description="Режиссер удален")
+    @admin_required
     def delete(self, did):
         result = director_service.delete_movie(did)
         return result, 204

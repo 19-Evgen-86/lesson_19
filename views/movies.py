@@ -2,7 +2,7 @@ from flask import request
 from flask_restx import Namespace, Resource
 
 from implemented import movie_service
-from utils import auth_required
+from utils import auth_required, admin_required
 
 movie_ns = Namespace("movies")
 
@@ -17,6 +17,7 @@ class MoviesView(Resource):
         return result, 200
 
     @movie_ns.response(200, description="Фильм добавлен")
+    @admin_required
     def post(self):
         data = request.json
         result = movie_service.add_movie(data)
@@ -34,6 +35,7 @@ class MovieView(Resource):
 
     @movie_ns.doc(params={"uid": "ID Фильма", "data": "Данные для обновления"})
     @movie_ns.response(201, description="Фильм обновлен")
+    @admin_required
     def put(self, uid):
         data = request.json
         result = movie_service.update_movie(data, uid)
@@ -41,6 +43,7 @@ class MovieView(Resource):
 
     @movie_ns.param("uid", "ID Фильма")
     @movie_ns.response(204, description="Фильм удален")
+    @admin_required
     def delete(self, uid):
         result = movie_service.delete_movie(uid)
         return result, 204
